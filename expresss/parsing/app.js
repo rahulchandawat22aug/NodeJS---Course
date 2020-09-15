@@ -1,22 +1,21 @@
 const express = require('express');
-
 const bodyparser = require('body-parser');
+const path = require('path');
+
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
 const app = express();
 
 app.use(bodyparser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/add-product', (req, res, next) => {
-    res.send('<form action="/product" method="POST"> <input type="text" name="title"><button type="submit">SUBMIT</button></input></form>');
-});
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
-app.post('/product', (req, res, next) => {
-    console.log(req.body);
-    res.redirect('/');
-});
-
+// this will only run when any of the above routes are not matched
 app.use('/', (req, res, next) => {
-    res.send("hello");
+    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 
 app.listen(3000);
